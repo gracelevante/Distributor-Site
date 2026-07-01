@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inspired LED – LED Strip Lighting</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --gold:       #ffd86b;
+      --gold-light: #f2e688;
+      --gold-dim:   #c8960c;
+      --bg-page:    #111111;
+      --bg-header:  #3a3a3a;
+      --bg-card:    #2a2a2a;
+      --border:     #3a3a3a;
+      --text-main:  #f0f0ee;
+      --text-muted: #999995;
+      --shadow:     0 2px 12px rgba(0,0,0,0.4);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Open Sans', sans-serif; font-size: 14px; background: var(--bg-page); color: var(--text-main); min-height: 100vh; }
+    .header { background: var(--bg-header); padding: 0 40px; border-bottom: 1px solid #333; height: 80px; display: flex; align-items: center; }
+    .logo-container { flex-shrink: 0; }
+    .logo { height: 75px; display: block; }
+    .nav-links { display: flex; gap: 20px; align-items: center; justify-content: center; flex: 1; }
+    .nav-links a { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; color: #aaaaaa; text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 10px; border-radius: 4px; transition: color 0.2s, background 0.2s; white-space: nowrap; }
+    .nav-links a:hover { color: var(--gold); background: rgba(255,216,107,0.07); }
+    .nav-links a.active { color: var(--gold); }
+    .nav-dropdown { position: relative; display: inline-block; }
+.nav-dropdown-toggle { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; color: #aaaaaa; text-decoration: none; letter-spacing: 0.06em; text-transform: uppercase; padding: 6px 10px; border-radius: 4px; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
+.nav-dropdown-toggle:hover, .nav-dropdown.open .nav-dropdown-toggle { color: var(--gold); background: rgba(255,216,107,0.07); }
+.nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; padding: 6px; min-width: 200px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); z-index: 100; margin-top: 6px; }
+.nav-dropdown.open .nav-dropdown-menu { display: block; }
+.nav-dropdown-menu a { display: block; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 600; color: var(--text-main); text-decoration: none; padding: 9px 12px; border-radius: 5px; white-space: nowrap; }
+.nav-dropdown-menu a:hover { background: rgba(255,216,107,0.1); color: var(--gold); }
+    .page-wrapper { max-width: 1400px; margin: 0 auto; padding: 40px 32px 80px; }
+    .section-eyebrow { font-family: 'Open Sans', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 8px; }
+    .page-title { font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 700; color: var(--text-main); margin-bottom: 32px; }
+    .state-message { text-align: center; padding: 60px 20px; color: var(--text-muted); font-size: 14px; }
+    .state-message .icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .product-section { margin-bottom:40px; }
+    .section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+    .section-title { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; color: var(--text-main); white-space: nowrap; }
+    .section-line { flex: 1; height: 1px; background: var(--border); }
+   .product-grid { display: flex; gap: 20px; overflow-x: auto; scroll-behavior: smooth; padding-bottom: 10px; scrollbar-width: thin; scrollbar-color: #555 transparent; }
+.product-grid::-webkit-scrollbar { height: 6px; }
+.product-grid::-webkit-scrollbar-track { background: transparent; }
+.product-grid::-webkit-scrollbar-thumb { background-color: #555; border-radius: 3px; }
+.product-grid .tile { flex: 0 0 240px; }
+    .tile { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; position: relative; transition: border-color 0.25s, transform 0.2s; box-shadow: var(--shadow); }
+    .tile:hover { border-color: var(--gold); transform: translateY(-3px); }
+    .tile::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent); opacity: 0; transition: opacity 0.3s; }
+    .tile:hover::after { opacity: 1; }
+    .tile-img-wrap { width: 100%; aspect-ratio: 4 / 3; background: #1a1a1a; overflow: hidden; flex-shrink: 0; }
+    .tile-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
+    .tile:hover .tile-img-wrap img { transform: scale(1.03); }
+    .tile-img-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #2a2a2a; color: #666; font-size: 2.5rem; }
+    .tile-body { padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    .tile-name { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 400; color: var(--text-main); line-height: 1.3; }
+    .btn-spec { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #111; background: var(--gold); border: none; padding: 8px; border-radius: 5px; text-decoration: none; display: block; text-align: center; transition: background 0.2s; }
+    .btn-spec:hover { background: var(--gold-light); }
+    .tile-divider { border: none; border-top: 1px solid var(--border); margin: 2px 0; }
+    .tile-sku { text-align: center; padding: 2px 0; }
+    .tile-sku-label { font-family: 'Open Sans', sans-serif; font-size: 9px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #888; display: block; margin-bottom: 1px; }
+    .tile-sku-val { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 400; color: var(--text-main); display: block; letter-spacing: 0.06em; }
+    @media (max-width: 600px) {
+    .header { padding: 0 16px; gap: 16px; }
+    .page-wrapper { padding: 24px 16px 48px; }
+    .nav-links a { font-size: 10px; padding: 6px 8px; }
+  }
+</style>
+</head>
+<!-- Speech bubble — fixed in place, always visible, acts as the "reveal" trigger -->
+<!-- Mascot — slides in/out, clicking him (once revealed) opens the PDF -->
+<!-- Speech bubble — fixed in place, always visible, acts as the "reveal" trigger -->
+<!-- Mascot — slides in/out, clicking him (once revealed) opens the PDF -->
+<!-- Speech bubble — fixed in place, always visible, acts as the "reveal" trigger -->
+<div id="il-bubble" style="position:fixed;top:130px;right:165px;background:#fff;border:1.5px solid #ddd;border-radius:12px;padding:10px 14px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:#2f2f2f;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,0.18);line-height:1.5;cursor:pointer;z-index:9999;transition:right 0.5s cubic-bezier(0.34,1.56,0.64,1);">
+  Not sure where to start?<br>Click me for help!
+  <div style="position:absolute;top:24px;right:-8px;width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-left:9px solid #fff;"></div>
+  <div style="position:absolute;top:24px;right:-10px;width:0;height:0;border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:10px solid #ddd;z-index:-1;"></div>
+</div>
+
+<!-- Mascot — slides in/out, clicking him (once revealed) opens the PDF -->
+<div id="il-mascot-wrap" style="position:fixed;top:140px;right:0;width:185px;height:185px;z-index:9998;transform:translateX(0px);transition:transform 0.5s cubic-bezier(0.34,1.56,0.64,1);">
+
+  <div id="il-close" style="position:absolute;top:-12px;right:142px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;color:#fff;background:#2a2a2a;border-radius:50%;cursor:pointer;z-index:10000;opacity:1;pointer-events:auto;transition:opacity 0.3s ease;">✕</div>
+
+  <a id="il-link" href="#" target="_blank" style="display:block;width:100%;height:100%;cursor:pointer;">
+
+  <svg id="il-svg" width="160" height="184" viewBox="-30 0 200 160" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
+    <defs>
+      <linearGradient id="ilCG" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#fff7e0"/>
+        <stop offset="100%" stop-color="#ffd86b"/>
+      </linearGradient>
+      <radialGradient id="ilGG" cx="50%" cy="40%" r="60%">
+        <stop offset="0%" stop-color="#fffaf0" stop-opacity="1"/>
+        <stop offset="100%" stop-color="#fffaf0" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="ilGlow" x="-100%" y="-100%" width="300%" height="300%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur1"/>
+        <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur2"/>
+        <feColorMatrix in="blur1" type="matrix" values="1 0 0 0 0.05  0 0.9 0 0 0.03  0 0 0.7 0 0  0 0 0 1.4 0" result="warmblur1"/>
+        <feMerge>
+          <feMergeNode in="warmblur1"/>
+          <feMergeNode in="blur2"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <g id="il-body" style="transform-origin:55px 95px;">
+      <ellipse cx="55" cy="140" rx="26" ry="4" fill="#000" opacity="0.18"/>
+      <g id="il-ll" style="transform-origin:26px 105px;">
+        <path d="M26 105 Q20 117 16 133" stroke="#b8b8b8" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="15" cy="135" rx="5.5" ry="3" fill="#888"/>
+      </g>
+      <g id="il-rl" style="transform-origin:84px 105px;">
+        <path d="M84 105 Q90 117 94 133" stroke="#b8b8b8" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="95" cy="135" rx="5.5" ry="3" fill="#888"/>
+      </g>
+      <rect x="15" y="30" width="80" height="80" rx="5" fill="#5a5a5a" stroke="#ffffff" stroke-width="2"/>
+      <rect x="5" y="40" width="11" height="14" rx="2" fill="#c9c9c9"/>
+      <rect x="94" y="40" width="11" height="14" rx="2" fill="#c9c9c9"/>
+      <rect x="5" y="86" width="11" height="14" rx="2" fill="#c9c9c9"/>
+      <rect x="94" y="86" width="11" height="14" rx="2" fill="#c9c9c9"/>
+      <rect id="il-chip" x="25" y="40" width="60" height="60" rx="4" fill="url(#ilCG)" stroke="#ffffff" stroke-width="2.5" filter="url(#ilGlow)">
+        <animate attributeName="opacity" values="0.95;1;0.95" dur="1.6s" repeatCount="indefinite"/>
+      </rect>
+      <ellipse cx="55" cy="60" rx="22" ry="14" fill="url(#ilGG)"/>
+      <circle cx="42" cy="71" r="3.6" fill="#1a1a1a"/>
+      <circle cx="68" cy="71" r="3.6" fill="#1a1a1a"/>
+      <circle cx="43" cy="69.2" r="1.2" fill="#fff"/>
+      <circle cx="69" cy="69.2" r="1.2" fill="#fff"/>
+      <path d="M42 81 Q55 89 68 81" stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <circle cx="31" cy="76" r="4" fill="#ff9d6e" opacity="0.5"/>
+      <circle cx="79" cy="76" r="4" fill="#ff9d6e" opacity="0.5"/>
+      <g id="il-la" style="transform-origin:20px 72px;">
+        <path d="M20 72 Q6 68 -4 58" stroke="#888" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <circle cx="-5" cy="56" r="4.5" fill="#666"/>
+      </g>
+      <g id="il-ra" style="transform-origin:90px 72px;">
+        <path d="M90 72 Q104 68 114 58" stroke="#888" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <circle cx="114" cy="58" r="5" fill="#666"/>
+        <g transform="translate(114,58) rotate(-35)">
+          <rect x="0" y="-3" width="34" height="6" rx="2" fill="#3a3a3a"/>
+          <rect x="34" y="-2.5" width="10" height="5" rx="1" fill="#888"/>
+          <rect x="44" y="-1.5" width="9" height="3" fill="#ccc"/>
+          <line x1="53" y1="0" x2="58" y2="0" stroke="#ffb84d" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="59" cy="0" r="2" fill="#ff8c1a">
+            <animate attributeName="opacity" values="1;0.4;1" dur="0.6s" repeatCount="indefinite"/>
+          </circle>
+          <rect x="6" y="-5" width="8" height="10" rx="1" fill="#c8960c"/>
+        </g>
+      </g>
+    </g>
+  </svg>
+  </a>
+</div>
+
+<script>
+(function() {
+  var wrap     = document.getElementById('il-mascot-wrap');
+  var bubble   = document.getElementById('il-bubble');
+  var link     = document.getElementById('il-link');
+  var closeBtn = document.getElementById('il-close');
+  var revealed = true;
+  var frame = 0;
+
+  function tick() {
+    frame += 1;
+    var t = frame * 0.07;
+    var body = document.getElementById('il-body');
+    var la   = document.getElementById('il-la');
+    var ra   = document.getElementById('il-ra');
+    var ll   = document.getElementById('il-ll');
+    var rl   = document.getElementById('il-rl');
+    if (body) body.style.transform = 'translateY(' + (Math.abs(Math.sin(t*2.2))*-8) + 'px) rotate(' + (Math.sin(t*1.1)*3) + 'deg)';
+    if (la)   la.style.transform   = 'rotate(' + (Math.sin(t*2.2)*18) + 'deg)';
+    if (ra)   ra.style.transform   = 'rotate(' + (-Math.sin(t*2.2)*20-10) + 'deg)';
+    if (ll)   ll.style.transform   = 'rotate(' + (Math.sin(t*2.2+Math.PI)*10) + 'deg)';
+    if (rl)   rl.style.transform   = 'rotate(' + (-Math.sin(t*2.2+Math.PI)*10) + 'deg)';
+    requestAnimationFrame(tick);
+  }
+  tick();
+
+  function reveal() {
+    revealed = true;
+    wrap.style.transform = 'translateX(0px)';
+    bubble.style.right = '165px';
+    closeBtn.style.opacity = '1';
+    closeBtn.style.pointerEvents = 'auto';
+  }
+
+  function hide() {
+    revealed = false;
+    wrap.style.transform = 'translateX(130px)';
+    bubble.style.right = '70px';
+    closeBtn.style.opacity = '0';
+    closeBtn.style.pointerEvents = 'none';
+  }
+
+  /* Clicking the bubble reveals the mascot */
+  bubble.addEventListener('click', function() {
+    if (!revealed) reveal();
+  });
+
+  /* Clicking the mascot link: only navigates to the PDF if already revealed */
+  link.addEventListener('click', function(e) {
+    if (!revealed) {
+      e.preventDefault();
+      reveal();
+    }
+    /* else: let default link behavior open the PDF in a new tab */
+  });
+
+  closeBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    hide();
+  });
+})();
+</script>
+
+<script>
+</script>
+
+<script>
+</script>
+
+<script>
+  document.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('forms-dropdown');
+    if (dropdown && !dropdown.contains(e.target)) dropdown.classList.remove('open');
+  });
+</script>
+<body>
+  <div class="header">
+    <div class="logo-container">
+      <img src="InspiredLEDLogo_2026.png" alt="Inspired LED" class="logo" />
+    </div>
+    <nav class="nav-links">
+      <a href="leds.html" class="active">LEDs</a>
+      <a href="led-sheets.html">LED Sheets &amp; Specialty</a>
+      <a href="power.html">Power</a>
+      <a href="connectors.html">Connectors</a>
+      <a href="channel-lens.html">Channel &amp; Lens Cover</a>
+      <a href="control.html">Control</a>
+      <a href="forms.html">Forms</a>  
+    </nav>
+    <div style="margin-left:auto; flex-shrink:0; font-family:'Open Sans',sans-serif; font-size:14px; color:#888; white-space:nowrap; text-align:right; line-height:1.5;">
+        <div style="color:#ffd86b; font-weight:600; font-family:'Montserrat',sans-serif; font-size:14px;">Questions?</div>
+        <div style="color:#aaa; font-size:13px;">(480) 941-4286 &nbsp;·&nbsp; orders@inspiredled.com</div>
+      </div>
+  </div>
+  <div class="page-wrapper">
+    <p class="section-eyebrow">Products</p>
+    <h1 class="page-title">LED Strip Lighting</h1>
+    <div id="content">
+      <div class="state-message"><div class="icon">⚡</div>Loading products…</div>
+    </div>
+  </div>
+  </div>
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzVs0pljy0IM55Tm65BXky729JlOhA_hvPa_clDrKKatnZ0uvaK7LZ-E2DwRm8_FfEa/exec';
+    const SHEET   = 'LEDs';
+
+    function buildTile(name, img, spec, sku) {
+      const imgId = `img-${Math.random().toString(36).slice(2)}`;
+      const tile  = document.createElement('div');
+      tile.className = 'tile';
+      tile.innerHTML = `
+        <div class="tile-img-wrap">
+          ${img ? `<img id="${imgId}" src="${img}" alt="${name}" loading="lazy" />` : `<div class="tile-img-placeholder">💡</div>`}
+        </div>
+        <div class="tile-body">
+          <div class="tile-name">${name}</div>
+          ${spec ? `<a href="${spec}" target="_blank" rel="noopener" class="btn-spec">Spec Sheet</a>` : ''}
+          ${sku  ? `<hr class="tile-divider"><div class="tile-sku"><span class="tile-sku-label">SKU</span><span class="tile-sku-val">${sku}</span></div>` : ''}
+        </div>`;
+      if (img) {
+        const imgEl = tile.querySelector(`#${imgId}`);
+        imgEl.addEventListener('error', () => { imgEl.parentElement.innerHTML = `<div class="tile-img-placeholder">💡</div>`; });
+      }
+      return tile;
+    }
+
+    async function loadProducts() {
+      const content = document.getElementById('content');
+      try {
+        const res   = await fetch(`${API_URL}?sheet=${encodeURIComponent(SHEET)}`);
+        const rows  = await res.json();
+        const valid = rows.filter(r => r.name && r.name.trim());
+
+        if (valid.length === 0) {
+          content.innerHTML = `<div class="state-message"><div class="icon">📭</div>No products found.</div>`;
+          return;
+        }
+
+        // Group by section
+        const sections = {};
+        const sectionOrder = [];
+        valid.forEach(r => {
+          const sec = r.section && r.section.trim() ? r.section.trim() : 'Other';
+          if (!sections[sec]) { sections[sec] = []; sectionOrder.push(sec); }
+          sections[sec].push(r);
+        });
+
+        content.innerHTML = '';
+        sectionOrder.forEach(secName => {
+  const wrap = document.createElement('div');
+  wrap.className = 'product-section';
+  const header = document.createElement('div');
+  header.className = 'section-header';
+  header.innerHTML = `<span class="section-title">${secName}</span><div class="section-line"></div>`;
+
+  const grid = document.createElement('div');
+  grid.className = 'product-grid';
+  sections[secName].forEach(({ name, img, spec, sku }) => grid.appendChild(buildTile(name, img, spec, sku)));
+
+  wrap.appendChild(header);
+wrap.appendChild(grid);
+content.appendChild(wrap);
+});
+
+      } catch(e) {
+        console.error(e);
+        content.innerHTML = `<div class="state-message"><div class="icon">⚠️</div>Couldn't load data.</div>`;
+      }
+    }
+
+    loadProducts();
+    setInterval(loadProducts, 30000);
+</script>
+</body>
+</html>

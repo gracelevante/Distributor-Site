@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inspired LED – Forms &amp; Applications</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --gold: #ffd86b; --gold-light: #f2e688; --gold-dim: #c8960c;
+      --bg-page: #111111; --bg-header: #3a3a3a; --bg-card: #1e1e1e;
+      --border: #3a3a3a; --text-main: #f0f0ee; --text-muted: #999995;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Open Sans', sans-serif; font-size: 14px; background: var(--bg-page); color: var(--text-main); min-height: 100vh; }
+    .header { background: var(--bg-header); padding: 0 40px; border-bottom: 1px solid #333; height: 80px; display: flex; align-items: center; }
+    .logo-container { flex-shrink: 0; }
+    .logo { height: 75px; display: block; }
+    .nav-links { display: flex; gap: 20px; align-items: center; justify-content: center; flex: 1; }
+    .nav-links a { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; color: #aaaaaa; text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 10px; border-radius: 4px; transition: color 0.2s, background 0.2s; white-space: nowrap; }
+    .nav-links a:hover { color: var(--gold); background: rgba(255,216,107,0.07); }
+    .nav-links a.active { color: var(--gold); }
+    .page-wrapper { max-width: 1400px; margin: 0 auto; padding: 40px 32px 80px; }
+    .section-eyebrow { font-family: 'Open Sans', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 8px; }
+    .page-title { font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 700; color: var(--text-main); margin-bottom: 32px; }
+    .forms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 760px; }
+    .form-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 24px; display: flex; flex-direction: column; gap: 10px; transition: border-color 0.25s, transform 0.2s; }
+    .form-card:hover { border-color: var(--gold); transform: translateY(-3px); }
+    .form-card-icon { font-size: 28px; }
+    .form-card-title { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 700; color: var(--text-main); }
+    .form-card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; flex: 1; }
+    .form-card-btn { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #111; background: var(--gold); border: none; padding: 10px 18px; border-radius: 5px; text-decoration: none; text-align: center; transition: background 0.2s; }
+    .form-card-btn:hover { background: var(--gold-light); }
+    @media (max-width: 600px) {
+      .header { padding: 0 16px; gap: 16px; }
+      .page-wrapper { padding: 24px 16px 48px; }
+      .nav-links a { font-size: 10px; padding: 6px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo-container">
+      <img src="InspiredLEDLogo_2026.png" alt="Inspired LED" class="logo" />
+    </div>
+    <nav class="nav-links">
+      <a href="leds.html">LEDs</a>
+      <a href="led-sheets.html">LED Sheets &amp; Specialty</a>
+      <a href="power.html">Power</a>
+      <a href="connectors.html">Connectors</a>
+      <a href="channel-lens.html">Channel &amp; Lens Cover</a>
+      <a href="control.html">Control</a>
+      <a href="forms.html" class="active">Forms</a>
+    </nav>
+    <div style="margin-left:auto; flex-shrink:0; font-family:'Open Sans',sans-serif; font-size:14px; color:#888; white-space:nowrap; text-align:right; line-height:1.5;">
+        <div style="color:#ffd86b; font-weight:600; font-family:'Montserrat',sans-serif; font-size:14px;">Questions?</div>
+        <div style="color:#aaa; font-size:13px;">(480) 941-4286 &nbsp;·&nbsp; orders@inspiredled.com</div>
+      </div>
+  </div>
+  <div class="page-wrapper">
+    <p class="section-eyebrow">Applications</p>
+    <h1 class="page-title">Forms &amp; Applications</h1>
+    <div class="forms-grid">
+      <div class="form-card">
+        <div class="form-card-icon">📋</div>
+        <div class="form-card-title">Distributor Application</div>
+        <div class="form-card-desc">For businesses looking to stock and resell Inspired LED products as an authorized distributor.</div>
+        <a href="https://www.inspiredled.com/distributor-application/" class="form-card-btn">Start Application</a>
+      </div>
+      <div class="form-card">
+        <div class="form-card-icon">🔧</div>
+        <div class="form-card-title">Trade Application</div>
+        <div class="form-card-desc">For contractors and electricians seeking trade discount pricing on Inspired LED products.</div>
+<a href="https://www.inspiredled.com/trade-professional-application/" class="form-card-btn">Start Application</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

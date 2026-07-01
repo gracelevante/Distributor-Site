@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inspired LED – Trade Professional Application</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --gold: #ffd86b; --gold-light: #f2e688; --gold-dim: #c8960c;
+      --bg-page: #111111; --bg-header: #3a3a3a; --bg-card: #1e1e1e;
+      --border: #3a3a3a; --text-main: #f0f0ee; --text-muted: #999995;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Open Sans', sans-serif; font-size: 14px; background: var(--bg-page); color: var(--text-main); min-height: 100vh; }
+    .header { background: var(--bg-header); padding: 0 40px; border-bottom: 1px solid #333; height: 80px; display: flex; align-items: center; }
+    .logo-container { flex-shrink: 0; }
+    .logo { height: 75px; display: block; }
+    .nav-links { display: flex; gap: 20px; align-items: center; flex: 1; }
+    .nav-links a { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; color: #aaaaaa; text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 10px; border-radius: 4px; transition: color 0.2s, background 0.2s; white-space: nowrap; }
+    .nav-links a:hover { color: var(--gold); background: rgba(255,216,107,0.07); }
+    .nav-links a.active { color: var(--gold); }
+    .contact-info { margin-left: auto; flex-shrink: 0; font-family: 'Open Sans', sans-serif; font-size: 14px; color: #888; white-space: nowrap; text-align: right; line-height: 1.5; }
+    .contact-info .q { color: var(--gold); font-weight: 600; font-family: 'Montserrat', sans-serif; font-size: 14px; }
+    .contact-info .d { color: #aaa; font-size: 13px; }
+    .page-wrapper { max-width: 860px; margin: 0 auto; padding: 40px 32px 80px; }
+    .section-eyebrow { font-family: 'Open Sans', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 8px; }
+    .page-title { font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 700; color: var(--text-main); margin-bottom: 6px; }
+    .page-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 32px; line-height: 1.6; }
+    .form-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin-bottom: 20px; }
+    .form-section-title { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .form-row { display: grid; gap: 14px; margin-bottom: 14px; }
+    .form-row.cols-2 { grid-template-columns: 1fr 1fr; }
+    .form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .form-row.cols-1 { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group label { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+    .form-group input, .form-group select, .form-group textarea {
+      background: #111; border: 1px solid var(--border); border-radius: 5px;
+      color: var(--text-main); font-family: 'Open Sans', sans-serif; font-size: 13px;
+      padding: 9px 12px; transition: border-color 0.2s; outline: none; width: 100%;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--gold); }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+    .form-group select option { background: #1e1e1e; }
+    .radio-group { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+    .radio-group label { display: flex; align-items: center; gap: 6px; font-family: 'Open Sans', sans-serif; font-size: 12px; color: var(--text-main); cursor: pointer; text-transform: none; letter-spacing: 0; font-weight: 400; }
+    .radio-group input[type="radio"], .radio-group input[type="checkbox"] { accent-color: var(--gold); width: 14px; height: 14px; flex-shrink: 0; }
+    .radio-label { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+    .note { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 8px; }
+    .submit-area { text-align: center; margin-top: 28px; }
+    .btn-submit { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #111; background: var(--gold); border: none; padding: 14px 40px; border-radius: 6px; cursor: pointer; transition: background 0.2s; }
+    .btn-submit:hover { background: var(--gold-light); }
+    .submit-note { font-size: 12px; color: var(--text-muted); margin-top: 12px; }
+    .success-msg { display: none; background: #1a2a1a; border: 1px solid #4a8a4a; border-radius: 8px; padding: 20px; text-align: center; margin-top: 20px; }
+    .success-msg h3 { font-family: 'Montserrat', sans-serif; color: #7adf7a; margin-bottom: 6px; }
+    .success-msg p { font-size: 13px; color: var(--text-muted); }
+    @media (max-width: 600px) {
+      .header { padding: 0 16px; gap: 16px; }
+      .page-wrapper { padding: 24px 16px 48px; }
+      .nav-links a { font-size: 10px; padding: 6px 8px; }
+      .form-row.cols-2, .form-row.cols-3 { grid-template-columns: 1fr; }
+      .contact-info { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo-container">
+      <img src="logo.png" alt="Inspired LED" class="logo" />
+    </div>
+    <nav class="nav-links">
+      <a href="leds.html">LEDs</a>
+      <a href="led-sheets.html">LED Sheets &amp; Specialty</a>
+      <a href="power.html">Power</a>
+      <a href="connectors.html">Connectors</a>
+      <a href="channel-lens.html">Channel &amp; Lens Cover</a>
+      <a href="control.html">Control</a>
+      <a href="forms.html" class="active">Forms</a>
+    </nav>
+    <div style="margin-left:auto; flex-shrink:0; font-family:'Open Sans',sans-serif; font-size:14px; color:#888; white-space:nowrap; text-align:right; line-height:1.5;">
+        <div style="color:#ffd86b; font-weight:600; font-family:'Montserrat',sans-serif; font-size:14px;">Questions?</div>
+        <div style="color:#aaa; font-size:13px;">(480) 941-4286 &nbsp;·&nbsp; orders@inspiredled.com</div>
+      </div>
+  </div>
+  <div class="page-wrapper">
+    <p class="section-eyebrow">Contractor &amp; Electrician Discount Program</p>
+    <h1 class="page-title">Trade Professional Application</h1>
+    <p class="page-subtitle">Complete this application in its entirety. Approved applicants receive trade discount pricing. Inspired LED reserves the right to verify all information.<br>Questions? Call <strong>(480) 941-4286</strong> or email <strong>orders@inspiredled.com</strong></p>
+
+    <form id="trade-form">
+
+      <!-- 1. Applicant Information -->
+      <div class="form-section">
+        <div class="form-section-title">1. Applicant Information</div>
+        <div class="form-row cols-1"><div class="form-group"><label>Today's Date</label><input type="date" name="date" /></div></div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>Applicant Full Name</label><input type="text" name="applicant_name" /></div>
+          <div class="form-group"><label>Job Title / Role</label><input type="text" name="job_title" /></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>Phone Number</label><input type="tel" name="phone" placeholder="(000) 000-0000" /></div>
+          <div class="form-group"><label>Email Address</label><input type="email" name="email" /></div>
+        </div>
+      </div>
+
+      <!-- 2. Business Information -->
+      <div class="form-section">
+        <div class="form-section-title">2. Business Information</div>
+        <div class="form-row cols-1"><div class="form-group"><label>Legal Business Name</label><input type="text" name="legal_name" /></div></div>
+        <div class="form-row cols-1"><div class="form-group"><label>DBA (if different)</label><input type="text" name="dba" /></div></div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>Date Business Established</label><input type="text" name="date_established" placeholder="e.g. 2010" /></div>
+          <div class="form-group"><label>Years in Business</label><input type="number" name="years_in_business" min="0" /></div>
+        </div>
+        <div class="form-row cols-1"><div class="form-group"><label>Business Website</label><input type="url" name="website" placeholder="https://" /></div></div>
+        <div class="form-row cols-1"><div class="form-group"><label>Business Email Address</label><input type="email" name="business_email" /></div></div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>Business Phone</label><input type="tel" name="business_phone" /></div>
+          <div class="form-group"><label>Fax (if applicable)</label><input type="text" name="fax" /></div>
+        </div>
+        <div class="form-row cols-1"><div class="form-group"><label>Business Street Address</label><input type="text" name="address" /></div></div>
+        <div class="form-row cols-3">
+          <div class="form-group"><label>City</label><input type="text" name="city" /></div>
+          <div class="form-group"><label>State</label><input type="text" name="state" /></div>
+          <div class="form-group"><label>Zip</label><input type="text" name="zip" /></div>
+        </div>
+      </div>
+
+      <!-- 3. Tax & Licensing -->
+      <div class="form-section">
+        <div class="form-section-title">3. Tax &amp; Licensing Information</div>
+        <div class="form-row cols-1"><div class="form-group"><label>Federal EIN</label><input type="text" name="ein" placeholder="XX-XXXXXXX" /></div></div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>State Tax-Exempt / Resale Certificate No.</label><input type="text" name="resale_cert" /></div>
+          <div class="form-group"><label>Issuing State</label><input type="text" name="issuing_state" /></div>
+        </div>
+        <div class="form-row cols-1"><div class="form-group"><label>Contractor License Number (if applicable)</label><input type="text" name="contractor_license" /></div></div>
+        <div class="form-row cols-1"><div class="form-group"><label>Electrical License Number (if applicable)</label><input type="text" name="electrical_license" /></div></div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>License Issuing State</label><input type="text" name="license_state" /></div>
+          <div class="form-group"><label>License Expiration Date</label><input type="date" name="license_expiration" /></div>
+        </div>
+        <p class="note">Please attach a copy of your resale certificate and/or applicable contractor or electrical license, and email to orders@inspiredled.com</p>
+      </div>
+
+      <!-- 4. Trade Credentials & Business Type -->
+      <div class="form-section">
+        <div class="form-section-title">4. Trade Credentials &amp; Business Type</div>
+
+        <div class="radio-label">Primary Trade Type</div>
+        <div class="radio-group">
+          <label><input type="radio" name="trade_type" value="General Contractor" /> General Contractor</label>
+          <label><input type="radio" name="trade_type" value="Electrical Contractor" /> Electrical Contractor</label>
+          <label><input type="radio" name="trade_type" value="Electrician (Independent)" /> Electrician (Independent)</label>
+          <label><input type="radio" name="trade_type" value="Lighting Specialist" /> Lighting Specialist</label>
+          <label><input type="radio" name="trade_type" value="Other" /> Other</label>
+        </div>
+
+        <div class="radio-label" style="margin-top:16px">Type of Organization</div>
+        <div class="radio-group">
+          <label><input type="radio" name="org_type" value="Sole Proprietor" /> Sole Proprietor</label>
+          <label><input type="radio" name="org_type" value="LLC" /> LLC</label>
+          <label><input type="radio" name="org_type" value="S-Corp" /> S-Corp</label>
+          <label><input type="radio" name="org_type" value="C-Corp" /> C-Corp</label>
+          <label><input type="radio" name="org_type" value="Partnership" /> Partnership</label>
+        </div>
+
+        <div class="radio-label" style="margin-top:16px">Primarily Work On</div>
+        <div class="radio-group">
+          <label><input type="radio" name="work_type" value="Residential" /> Residential</label>
+          <label><input type="radio" name="work_type" value="Commercial" /> Commercial</label>
+          <label><input type="radio" name="work_type" value="Industrial" /> Industrial</label>
+          <label><input type="radio" name="work_type" value="Government / Municipal" /> Government / Municipal</label>
+          <label><input type="radio" name="work_type" value="Mixed" /> Mixed</label>
+        </div>
+
+        <div class="form-row cols-1" style="margin-top:16px"><div class="form-group"><label>Number of Employees / Field Technicians</label><input type="number" name="employee_count" min="0" /></div></div>
+        <div class="form-row cols-1"><div class="form-group"><label>Primary Service States / Coverage Area</label><input type="text" name="coverage_area" /></div></div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>Projects Completed (Last 12 Mo.)</label><input type="number" name="projects_completed" min="0" /></div>
+          <div class="form-group"><label>Avg. Project Size ($)</label><input type="text" name="avg_project_size" placeholder="$0" /></div>
+        </div>
+      </div>
+
+      <!-- 5. Projected LED / Lighting Purchases -->
+      <div class="form-section">
+        <div class="form-section-title">5. Projected LED / Lighting Purchases</div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>Estimated Annual LED Spend ($)</label><input type="text" name="annual_spend" placeholder="$0" /></div>
+          <div class="form-group"><label>Current Primary Supplier(s)</label><input type="text" name="current_suppliers" /></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>Est. Monthly Unit Volume</label><input type="text" name="monthly_volume" /></div>
+          <div class="form-group"><label>Avg. Order Value ($)</label><input type="text" name="avg_order_value" placeholder="$0" /></div>
+        </div>
+      </div>
+
+      <!-- 6. Target Markets & Top Customer Types -->
+      <div class="form-section">
+        <div class="form-section-title">6. Target Markets &amp; Top Customer Types</div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>Top Customer Type 1</label><input type="text" name="customer_type_1" /></div>
+          <div class="form-group"><label>Top Customer Type 2</label><input type="text" name="customer_type_2" /></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>Top Customer Type 3</label><input type="text" name="customer_type_3" /></div>
+          <div class="form-group"><label>Geographic Regions Served</label><input type="text" name="geo_regions" /></div>
+        </div>
+      </div>
+
+      <!-- 7. Business Overview -->
+      <div class="form-section">
+        <div class="form-section-title">7. Business Overview</div>
+        <div class="form-row cols-1"><div class="form-group"><label>Briefly describe your business, the types of projects you install LED lighting on, and why you are interested in becoming an Inspired LED trade account</label><textarea name="business_overview" style="min-height:120px"></textarea></div></div>
+      </div>
+
+      <!-- Certification -->
+      <div class="form-section">
+        <div class="form-section-title">Certification &amp; Signature</div>
+        <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px; line-height:1.6;">By signing below, I certify that all information provided is accurate and that my business qualifies as a licensed trade professional or contractor. I understand that Inspired LED reserves the right to verify all information and revoke trade pricing if eligibility requirements are not met.</p>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>Authorized Signature (type full name)</label><input type="text" name="signature" /></div>
+          <div class="form-group"><label>Date</label><input type="date" name="sig_date" /></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="form-group"><label>Printed Name</label><input type="text" name="printed_name" /></div>
+          <div class="form-group"><label>Title</label><input type="text" name="sig_title" /></div>
+        </div>
+      </div>
+
+      <div class="submit-area">
+        <button type="submit" class="btn-submit">Submit Application</button>
+        <p class="submit-note">Please include a copy of your resale certificate and/or contractor license.<br>Questions? <strong>(480) 941-4286</strong> · <strong>orders@inspiredled.com</strong></p>
+      </div>
+
+      <div class="success-msg" id="success-msg">
+        <h3>✓ Application Submitted!</h3>
+        <p>Thank you! Our team will review your application and be in touch soon.<br>Questions? Call (480) 941-4286 or email orders@inspiredled.com</p>
+      </div>
+
+    </form>
+  </div>
+
+  <script>
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzVs0pljy0IM55Tm65BXky729JlOhA_hvPa_clDrKKatnZ0uvaK7LZ-E2DwRm8_FfEa/exec';
+
+    document.getElementById('trade-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.querySelector('.btn-submit');
+      btn.textContent = 'Submitting...';
+      btn.disabled = true;
+
+      const formData = new FormData(e.target);
+      const data = { form_type: 'Trade Application' };
+      formData.forEach((value, key) => {
+        if (data[key]) {
+          data[key] = data[key] + ', ' + value;
+        } else {
+          data[key] = value;
+        }
+      });
+
+      try {
+        await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(data)
+        });
+        btn.style.display = 'none';
+        document.getElementById('success-msg').style.display = 'block';
+        document.getElementById('success-msg').scrollIntoView({ behavior: 'smooth' });
+      } catch (err) {
+        console.error(err);
+        btn.textContent = 'Submit Application';
+        btn.disabled = false;
+        alert('There was an error submitting your application. Please try again or email orders@inspiredled.com directly.');
+      }
+    });
+  </script>
+</body>
+</html>

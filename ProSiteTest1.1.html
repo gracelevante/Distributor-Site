@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inspired LED – Products</title>
+  <meta http-equiv="refresh" content="0; url=leds.html" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Brand Tokens ────────────────────────────────────── */
+    :root {
+      --gold:        #ffd86b;
+      --gold-soft:   #f2e688;
+      --gold-glow:   #f2e6b8;
+      --black:       #000000;
+      --charcoal:    #2f2f2f;
+      --slate:       #4a545c;
+      --arch-gray:   #b9b9b6;
+      --warm-gray:   #e6e6e4;
+      --sand:        #d8c9a3;
+      --olive:       #7a7f72;
+      --taupe:       #8a7f73;
+      --bg-page:     #111111;
+      --bg-panel:    #1c1c1c;
+      --bg-card:     #222222;
+      --border:      #333333;
+      --text-main:   #f0f0ee;
+      --text-muted:  #b9b9b6;
+    }
+
+    /* ── Reset / Base ────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 14px;
+      background: var(--bg-page);
+      color: var(--text-main);
+      min-height: 100vh;
+    }
+
+    /* ── Header (matches index.html) ─────────────────────── */
+    .header {
+  background: var(--bg-panel);
+  border-bottom: 2px solid #444;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+    .logo-container {
+  filter: drop-shadow(0 0 8px white);
+  flex-shrink: 0;
+}
+
+    /* Nav links on left */
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      z-index: 1;
+    }
+    .nav-links a {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--arch-gray);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--gold); }
+
+    .clock {
+      position: absolute;
+      right: 30px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #fff486;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    /* ── Page body ───────────────────────────────────────── */
+    .page-wrapper {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 36px 28px 60px;
+    }
+
+    /* ── Section eyebrow + title ─────────────────────────── */
+    .section-eyebrow {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 25px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+    .section-subtitle {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 36px;
+      max-width: 520px;
+    }
+
+    /* ── Loading / Error states ──────────────────────────── */
+    .state-message {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+      font-family: 'Open Sans', sans-serif;
+      font-size: 14px;
+    }
+    .state-message .icon { font-size: 2.5rem; margin-bottom: 12px; }
+
+    /* ── Category grid ───────────────────────────────────── */
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    /* ── Card ─────────────────────────────────────────────── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: border-color 0.25s, transform 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+    .card::after {
+      /* Gold glow bar — the signature hover element */
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold), var(--gold-glow), var(--gold), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .card:hover {
+      border-color: var(--gold);
+      transform: translateY(-3px);
+    }
+    .card:hover::after { opacity: 1; }
+
+    /* Image area */
+    .card-img-wrap {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      background: #000;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .card-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: opacity 0.3s;
+    }
+    .card-img-wrap img.img-error {
+      opacity: 0.2;
+    }
+    .card-img-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--charcoal);
+      color: var(--arch-gray);
+      font-size: 2rem;
+    }
+
+    /* Text area */
+    .card-body {
+      padding: 16px 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+    .card-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.35;
+    }
+    .card-count {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .card-link {
+      margin-top: auto;
+      padding-top: 10px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: gap 0.2s;
+    }
+    .card:hover .card-link { gap: 8px; }
+
+    /* ── Divider ──────────────────────────────────────────── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 40px 0 32px;
+    }
+
+    /* ── How to edit banner ──────────────────────────────── */
+    .edit-banner {
+      background: var(--charcoal);
+      border: 1px solid var(--slate);
+      border-radius: 8px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+    .edit-banner .icon { font-size: 1.4rem; flex-shrink: 0; }
+    .edit-banner-text {
+      flex: 1;
+      min-width: 200px;
+    }
+    .edit-banner-text strong {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 3px;
+    }
+    .edit-banner-text span {
+      font-size: 12px;
+      color: var(--arch-gray);
+    }
+    .edit-banner a {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--bg-page);
+      background: var(--gold);
+      padding: 8px 16px;
+      border-radius: 5px;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .edit-banner a:hover { background: var(--gold-soft); }
+
+    /* ── Responsive ──────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .page-wrapper { padding: 24px 16px 48px; }
+      .nav-links { display: none; }
+      .category-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .card, .card::after, .card-img-wrap img, .card-link { transition: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Header ──────────────────────────────────────── -->
+   <div class="header">
+    <div class="logo-container">
+      <img src="logo.png" alt="Inspired LED" class="logo" />
+    </div>
+    <nav class="nav-links">
+      <a href="leds.html">LEDs</a>
+      <a href="power.html">Power</a>
+      <a href="connectors.html">Connectors</a>
+      <a href="channel-lens.html">Channel &amp; Lens Cover</a>
+      <a href="control.html">Control</a>
+    </nav>
+  </div>
+
+  <!-- ── Page Content ────────────────────────────────── -->
+  <div class="page-wrapper">
+
+    <!-- Edit banner -->
+    
+
+    <!-- Section header -->
+    <p class="section-eyebrow">Browse</p>
+    <h1 class="section-title">Shop by Category</h1>
+    <p class="section-subtitle">Explore our full range of LED lighting solutions — from flexible strips to channels and lenses.</p>
+
+    <!-- Grid populated by JS -->
+    <div class="category-grid" id="category-grid">
+      <div class="state-message">
+        <div class="icon">⚡</div>
+        Loading categories…
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Scripts ─────────────────────────────────────── -->
+  <script>
+    /* ── Clock ───────────────────────────────────── */
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clock').textContent =
+        now.toLocaleDateString() + ' ' +
+        now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    /* ── Google Sheet config ─────────────────────── */
+    /*
+      SHEET SETUP INSTRUCTIONS
+      ─────────────────────────────────────────────────────────────
+      In your Google Sheet, create a tab named exactly: Products
+
+      Columns (row 1 = headers, data starts row 2):
+        A  Category Name    e.g. "12V & 24V COB Flexible LED Lighting"
+        B  Product Count    e.g. 7
+        C  Image URL        Direct link to an image (https://…)
+        D  Shop URL         Full URL to the category page on your site
+        E  Description      (optional) Short one-line description
+
+      Make sure the sheet is shared as "Anyone with the link can view".
+      ─────────────────────────────────────────────────────────────
+    */
+    const SHEET_ID   = '1uwkWW5ItWHrLfhuP1BTbUOHouUQbyhtMemuexl3Y5H0';
+    const SHEET_NAME = 'Products';   // ← rename this tab to match
+
+    async function fetchSheet(sheetName) {
+      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheetName)}&tqx=out:json`;
+      const res  = await fetch(url);
+      const text = await res.text();
+      const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
+      return json.table.rows.map(row => row.c.map(cell => (cell?.v ?? cell?.f ?? '')));
+    }
+
+    function renderCards(rows) {
+      const grid = document.getElementById('category-grid');
+
+      if (!rows || rows.length === 0) {
+        grid.innerHTML = `
+          <div class="state-message" style="grid-column:1/-1">
+            <div class="icon">📭</div>
+            No categories found. Add rows to the <strong>Products</strong> sheet tab.
+          </div>`;
+        return;
+      }
+
+      grid.innerHTML = '';
+
+      rows.forEach(([name, count, imgUrl, shopUrl, desc]) => {
+        if (!name) return;  // skip blank rows
+
+        const href  = shopUrl  || '#';
+        const label = count !== '' && count !== undefined ? `${count} product${count == 1 ? '' : 's'}` : '';
+        const imgId = `img-${Math.random().toString(36).slice(2)}`;
+
+        const card = document.createElement('a');
+        card.className = 'card';
+        card.href      = href;
+        card.target    = shopUrl ? '_blank' : '_self';
+        card.rel       = 'noopener noreferrer';
+        card.title     = name;
+
+        card.innerHTML = `
+          <div class="card-img-wrap">
+            ${imgUrl
+              ? `<img id="${imgId}" src="${imgUrl}" alt="${name}" loading="lazy" />`
+              : `<div class="card-img-placeholder">💡</div>`
+            }
+          </div>
+          <div class="card-body">
+            <div class="card-title">${name}</div>
+            ${label ? `<div class="card-count">${label}</div>` : ''}
+            ${desc   ? `<div class="card-count" style="color:var(--olive);margin-top:2px">${desc}</div>` : ''}
+            <div class="card-link">Shop now →</div>
+          </div>`;
+
+        grid.appendChild(card);
+
+        // Graceful image fallback
+        if (imgUrl) {
+          const img = card.querySelector(`#${imgId}`);
+          img.addEventListener('error', () => {
+            img.classList.add('img-error');
+            img.parentElement.innerHTML = `<div class="card-img-placeholder">💡</div>`;
+          });
+        }
+      });
+    }
+
+    async function loadProducts() {
+      const grid = document.getElementById('category-grid');
+      try {
+        const rows = await fetchSheet(SHEET_NAME);
+        renderCards(rows);
+      } catch (err) {
+        console.error(err);
+        grid.innerHTML = `
+          <div class="state-message" style="grid-column:1/-1">
+            <div class="icon">⚠️</div>
+            Couldn't load product data.<br>
+            Make sure the sheet is shared publicly and the tab is named <strong>${SHEET_NAME}</strong>.
+          </div>`;
+      }
+    }
+
+    loadProducts();
+    setInterval(loadProducts, 30000); // refresh every 60 s
+  </script>
+</body>
+</html>
