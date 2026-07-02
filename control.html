@@ -36,11 +36,12 @@
     .section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
     .section-title { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; color: var(--text-main); white-space: nowrap; }
     .section-line { flex: 1; height: 1px; background: var(--border); }
-   .product-grid { display: flex; gap: 20px; overflow-x: auto; scroll-behavior: smooth; padding-bottom: 10px; scrollbar-width: thin; scrollbar-color: #555 transparent; }
-.product-grid::-webkit-scrollbar { height: 6px; }
-.product-grid::-webkit-scrollbar-track { background: transparent; }
-.product-grid::-webkit-scrollbar-thumb { background-color: #555; border-radius: 3px; }
+   .product-row { display: flex; align-items: center; gap: 20px; }
+.product-grid { display: flex; gap: 20px; overflow-x: auto; scroll-behavior: smooth; flex: 1; scrollbar-width: none; }
+.product-grid::-webkit-scrollbar { display: none; }
 .product-grid .tile { flex: 0 0 240px; }
+.scroll-arrow { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--gold); flex-shrink: 0; cursor: pointer; font-size: 16px; transition: border-color 0.2s; user-select: none; }
+.scroll-arrow:hover { border-color: var(--gold); }
     .tile { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; position: relative; transition: border-color 0.25s, transform 0.2s; box-shadow: var(--shadow); }
     .tile:hover { border-color: var(--gold); transform: translateY(-3px); }
     .tile::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent); opacity: 0; transition: opacity 0.3s; }
@@ -61,11 +62,12 @@
       .header { padding: 0 16px; gap: 16px; }
       .page-wrapper { padding: 24px 16px 48px; }
       .nav-links a { font-size: 10px; padding: 6px 8px; }
-      .product-grid { display: flex; gap: 20px; overflow-x: auto; scroll-behavior: smooth; padding-bottom: 10px; scrollbar-width: thin; scrollbar-color: #555 transparent; }
-.product-grid::-webkit-scrollbar { height: 6px; }
-.product-grid::-webkit-scrollbar-track { background: transparent; }
-.product-grid::-webkit-scrollbar-thumb { background-color: #555; border-radius: 3px; }
+      .product-row { display: flex; align-items: center; gap: 20px; }
+.product-grid { display: flex; gap: 20px; overflow-x: auto; scroll-behavior: smooth; flex: 1; scrollbar-width: none; }
+.product-grid::-webkit-scrollbar { display: none; }
 .product-grid .tile { flex: 0 0 240px; }
+.scroll-arrow { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--gold); flex-shrink: 0; cursor: pointer; font-size: 16px; transition: border-color 0.2s; user-select: none; }
+.scroll-arrow:hover { border-color: var(--gold); }
     }
 </style>
 </head>
@@ -307,8 +309,21 @@
           sections[secName].forEach(({ name, img, spec, sku }) => {
             grid.appendChild(buildTile(name, img, spec, sku));
           });
+          const row = document.createElement('div');
+          row.className = 'product-row';
+          const leftArrow = document.createElement('div');
+          leftArrow.className = 'scroll-arrow';
+          leftArrow.textContent = '‹';
+          leftArrow.onclick = () => grid.scrollBy({ left: -280, behavior: 'smooth' });
+          const rightArrow = document.createElement('div');
+          rightArrow.className = 'scroll-arrow';
+          rightArrow.textContent = '›';
+          rightArrow.onclick = () => grid.scrollBy({ left: 280, behavior: 'smooth' });
+          row.appendChild(leftArrow);
+          row.appendChild(grid);
+          row.appendChild(rightArrow);
           wrap.appendChild(header);
-          wrap.appendChild(grid);
+          wrap.appendChild(row);
           content.appendChild(wrap);
         });
       } catch(e) {
