@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Inspired LED – LED Strip Lighting</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="mobile-nav.css">
   <style>
     :root {
       --gold:       #ffd86b;
@@ -27,6 +28,7 @@
     .nav-links a { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; color: #aaaaaa; text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 10px; border-radius: 4px; transition: color 0.2s, background 0.2s; white-space: nowrap; }
     .nav-links a:hover { color: var(--gold); background: rgba(255,216,107,0.07); }
     .nav-links a.active { color: var(--gold); }
+
     .nav-dropdown { position: relative; display: inline-block; }
 .nav-dropdown-toggle { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; color: #aaaaaa; text-decoration: none; letter-spacing: 0.06em; text-transform: uppercase; padding: 6px 10px; border-radius: 4px; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
 .nav-dropdown-toggle:hover, .nav-dropdown.open .nav-dropdown-toggle { color: var(--gold); background: rgba(255,216,107,0.07); }
@@ -65,11 +67,12 @@
     .tile-sku { text-align: center; padding: 2px 0; }
     .tile-sku-label { font-family: 'Open Sans', sans-serif; font-size: 9px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #888; display: block; margin-bottom: 1px; }
     .tile-sku-val { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 400; color: var(--text-main); display: block; letter-spacing: 0.06em; }
+
     @media (max-width: 600px) {
-    .header { padding: 0 16px; gap: 16px; }
     .page-wrapper { padding: 24px 16px 48px; }
-    .nav-links a { font-size: 10px; padding: 6px 8px; }
   }
+
+
 </style>
 </head>
 <!-- Speech bubble — fixed in place, always visible, acts as the "reveal" trigger -->
@@ -241,7 +244,7 @@
     <div class="logo-container">
       <img src="InspiredLEDLogo_2026.png" alt="Inspired LED" class="logo" />
     </div>
-    <nav class="nav-links">
+    <nav class="nav-links" id="navLinks">
       <a href="leds.html" class="active">LEDs</a>
       <a href="led-sheets.html">LED Sheets &amp; Specialty</a>
       <a href="power.html">Power</a>
@@ -249,11 +252,18 @@
       <a href="channel-lens.html">Channel &amp; Lens Cover</a>
       <a href="control.html">Control</a>
       <a href="https://www.inspiredled.com/distributor-application/">Forms</a>
-    </nav>
-    <div style="margin-left:auto; flex-shrink:0; font-family:'Open Sans',sans-serif; font-size:14px; color:#888; white-space:nowrap; text-align:right; line-height:1.5;">
-        <div style="color:#ffd86b; font-weight:600; font-family:'Montserrat',sans-serif; font-size:14px;">Questions?</div>
-        <div style="color:#aaa; font-size:13px;">(480) 941-4286 &nbsp;·&nbsp; orders@inspiredled.com</div>
+      <div class="nav-mobile-contact">
+        <a href="tel:4809414286">(480) 941-4286</a>
+        <a href="mailto:orders@inspiredled.com">orders@inspiredled.com</a>
       </div>
+    </nav>
+    <div class="contact-info">
+        <div class="q">Questions?</div>
+        <div class="d">(480) 941-4286 &nbsp;·&nbsp; orders@inspiredled.com</div>
+      </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </div>
   <div class="page-wrapper">
     <p class="section-eyebrow">Products</p>
@@ -264,8 +274,9 @@
   </div>
   </div>
   <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbzVs0pljy0IM55Tm65BXky729JlOhA_hvPa_clDrKKatnZ0uvaK7LZ-E2DwRm8_FfEa/exec';
-    const SHEET   = 'LEDs';
+    const API_URL   = 'https://script.google.com/macros/s/AKfycbzVs0pljy0IM55Tm65BXky729JlOhA_hvPa_clDrKKatnZ0uvaK7LZ-E2DwRm8_FfEa/exec';
+    const SHEET     = 'LEDs';
+    const CACHE_KEY = `il-products-${SHEET}`;
 
     function buildTile(name, img, spec, sku) {
       const imgId = `img-${Math.random().toString(36).slice(2)}`;
@@ -273,7 +284,7 @@
       tile.className = 'tile';
       tile.innerHTML = `
         <div class="tile-img-wrap">
-          ${img ? `<img id="${imgId}" src="${img}" alt="${name}" loading="lazy" />` : `<div class="tile-img-placeholder">💡</div>`}
+          ${img ? `<img id="${imgId}" src="${img.replace(/-\d+x\d+(?=\.\w+$)/, '-300x225')}" data-original="${img}" alt="${name}" loading="lazy" decoding="async" />` : `<div class="tile-img-placeholder">💡</div>`}
         </div>
         <div class="tile-body">
           <div class="tile-name">${name}</div>
@@ -282,7 +293,13 @@
         </div>`;
       if (img) {
         const imgEl = tile.querySelector(`#${imgId}`);
-        imgEl.addEventListener('error', () => { imgEl.parentElement.innerHTML = `<div class="tile-img-placeholder">💡</div>`; });
+        imgEl.addEventListener('error', () => {
+          if (imgEl.src !== imgEl.dataset.original) {
+            imgEl.src = imgEl.dataset.original;
+          } else {
+            imgEl.parentElement.innerHTML = `<div class="tile-img-placeholder">💡</div>`;
+          }
+        });
       }
       return tile;
     }
@@ -293,6 +310,7 @@
         const res   = await fetch(`${API_URL}?sheet=${encodeURIComponent(SHEET)}`);
         const rows  = await res.json();
         const valid = rows.filter(r => r.name && r.name.trim());
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify(valid));
 
         if (valid.length === 0) {
           content.innerHTML = `<div class="state-message"><div class="icon">📭</div>No products found.</div>`;
@@ -340,12 +358,57 @@ content.appendChild(wrap);
 
       } catch(e) {
         console.error(e);
-        content.innerHTML = `<div class="state-message"><div class="icon">⚠️</div>Couldn't load data.</div>`;
+        if (!content.querySelector('.tile')) {
+          content.innerHTML = `<div class="state-message"><div class="icon">⚠️</div>Couldn't load data.</div>`;
+        }
       }
+    }
+
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (cached) {
+      try {
+        const valid = JSON.parse(cached);
+        const content = document.getElementById('content');
+        const sections = {};
+        const sectionOrder = [];
+        valid.forEach(r => {
+          const sec = r.section && r.section.trim() ? r.section.trim() : 'Other';
+          if (!sections[sec]) { sections[sec] = []; sectionOrder.push(sec); }
+          sections[sec].push(r);
+        });
+        content.innerHTML = '';
+        sectionOrder.forEach(secName => {
+          const wrap = document.createElement('div');
+          wrap.className = 'product-section';
+          const header = document.createElement('div');
+          header.className = 'section-header';
+          header.innerHTML = `<span class="section-title">${secName}</span><div class="section-line"></div>`;
+          const grid = document.createElement('div');
+          grid.className = 'product-grid';
+          sections[secName].forEach(({ name, img, spec, sku }) => grid.appendChild(buildTile(name, img, spec, sku)));
+          const row = document.createElement('div');
+          row.className = 'product-row';
+          const leftArrow = document.createElement('div');
+          leftArrow.className = 'scroll-arrow';
+          leftArrow.textContent = '‹';
+          leftArrow.onclick = () => grid.scrollBy({ left: -280, behavior: 'smooth' });
+          const rightArrow = document.createElement('div');
+          rightArrow.className = 'scroll-arrow';
+          rightArrow.textContent = '›';
+          rightArrow.onclick = () => grid.scrollBy({ left: 280, behavior: 'smooth' });
+          row.appendChild(leftArrow);
+          row.appendChild(grid);
+          row.appendChild(rightArrow);
+          wrap.appendChild(header);
+          wrap.appendChild(row);
+          content.appendChild(wrap);
+        });
+      } catch(e) { /* ignore bad cache, fresh load below will fix it */ }
     }
 
     loadProducts();
     setInterval(loadProducts, 30000);
 </script>
+<script src="mobile-nav.js"></script>
 </body>
 </html>
