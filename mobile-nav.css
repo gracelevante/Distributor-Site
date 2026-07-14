@@ -65,33 +65,40 @@
 }
 
 /* Mascot + speech bubble (only present on category pages — no-op elsewhere)
-   Lives as a small floating icon bottom-right, clear of the header,
-   title, and product grid entirely — never sits near the top of the page. */
+   Hidden entirely on phones/tablets for now — stays fully intact on desktop. */
 @media (max-width: 900px) {
-  #il-mascot-wrap { top: auto !important; bottom: 16px !important; right: 12px !important; width: 50px !important; height: 50px !important; }
-  #il-close { top: -6px !important; right: -6px !important; }
-  #il-bubble { top: auto !important; bottom: 12px !important; right: 66px !important; font-size: 10px !important; white-space: normal !important; max-width: 120px !important; padding: 7px 9px !important; line-height: 1.35 !important; transition: all 0.3s ease; }
-
-  /* When dismissed via the X, collapse the bubble down to a tiny dot
-     instead of leaving the full "Not sure where to start?" text up —
-     tap the dot to bring the mascot and full bubble back. */
-  #il-bubble.collapsed {
-    width: 14px !important;
-    height: 14px !important;
-    max-width: 14px !important;
-    min-width: 14px !important;
-    padding: 0 !important;
-    border-radius: 50% !important;
-    font-size: 0 !important;
-    overflow: hidden;
-    right: 12px !important;
-    bottom: 20px !important;
-    top: auto !important;
-  }
-  #il-bubble.collapsed > div { display: none !important; }
+  #il-mascot-wrap, #il-bubble { display: none !important; }
 }
-@media (max-width: 380px) {
-  #il-bubble:not(.collapsed) { display: none !important; }
+
+/* Small floating help button — replaces the mascot on mobile.
+   Element itself is created automatically by mobile-nav.js; adjust
+   any styling (color, size, position) here only. */
+#mobile-help-btn { display: none; }
+@media (max-width: 900px) {
+  #mobile-help-btn {
+    display: flex;
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-header, #3a3a3a);
+    border: 1.5px solid var(--gold, #ffd86b);
+    color: var(--gold, #ffd86b);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+    z-index: 9998;
+    opacity: 0.85;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  #mobile-help-btn:active { transform: scale(0.94); opacity: 1; }
 }
 
 /* Prevent iOS Safari auto-zoom on form field focus (only affects pages with real inputs) */
