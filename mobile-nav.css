@@ -64,16 +64,37 @@
   .nav-mobile-contact a { font-family: 'Open Sans', sans-serif; font-size: 12px; font-weight: 400; letter-spacing: normal; text-transform: none; color: #aaa; padding: 2px 0; }
 }
 
-/* Mascot + speech bubble (only present on category pages — no-op elsewhere) */
+/* Mascot + speech bubble (only present on category pages — no-op elsewhere)
+   Lives as a small floating icon bottom-right, clear of the header,
+   title, and product grid entirely — never sits near the top of the page. */
 @media (max-width: 900px) {
-  #il-mascot-wrap { width: 75px !important; height: 75px !important; top: 92px !important; }
-  #il-bubble { right: 62px !important; top: 80px !important; font-size: 10px !important; white-space: normal !important; max-width: 130px !important; padding: 7px 9px !important; line-height: 1.35 !important; }
+  #il-mascot-wrap { top: auto !important; bottom: 16px !important; right: 12px !important; width: 50px !important; height: 50px !important; }
+  #il-close { top: -6px !important; right: -6px !important; }
+  #il-bubble { top: auto !important; bottom: 12px !important; right: 66px !important; font-size: 10px !important; white-space: normal !important; max-width: 120px !important; padding: 7px 9px !important; line-height: 1.35 !important; transition: all 0.3s ease; }
+
+  /* When dismissed via the X, collapse the bubble down to a tiny dot
+     instead of leaving the full "Not sure where to start?" text up —
+     tap the dot to bring the mascot and full bubble back. */
+  #il-bubble.collapsed {
+    width: 14px !important;
+    height: 14px !important;
+    max-width: 14px !important;
+    min-width: 14px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    font-size: 0 !important;
+    overflow: hidden;
+    right: 12px !important;
+    bottom: 20px !important;
+    top: auto !important;
+  }
+  #il-bubble.collapsed > div { display: none !important; }
 }
 @media (max-width: 380px) {
-  #il-bubble { display: none !important; }
+  #il-bubble:not(.collapsed) { display: none !important; }
 }
 
 /* Prevent iOS Safari auto-zoom on form field focus (only affects pages with real inputs) */
 @media (max-width: 600px) {
   input, select, textarea { font-size: 16px !important; }
-}               
+}
