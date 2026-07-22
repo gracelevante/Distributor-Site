@@ -116,7 +116,7 @@
 <!-- Mascot — slides in/out, clicking him (once revealed) opens the PDF -->
 <!-- Speech bubble — fixed in place, always visible, acts as the "reveal" trigger -->
 <div id="il-bubble" style="position:fixed;top:130px;right:165px;background:#fff;border:1.5px solid #ddd;border-radius:12px;padding:10px 14px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:#2f2f2f;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,0.18);line-height:1.5;cursor:pointer;z-index:9999;transition:right 0.5s cubic-bezier(0.34,1.56,0.64,1);">
-  Not sure where to start?<br>Click me for help!
+  Site is under construction!<br>Contact us for suggestions!
   <div style="position:absolute;top:24px;right:-8px;width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-left:9px solid #fff;"></div>
   <div style="position:absolute;top:24px;right:-10px;width:0;height:0;border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:10px solid #ddd;z-index:-1;"></div>
 </div>
@@ -126,7 +126,7 @@
 
   <div id="il-close" style="position:absolute;top:-12px;right:142px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;color:#fff;background:#2a2a2a;border-radius:50%;cursor:pointer;z-index:10000;opacity:1;pointer-events:auto;transition:opacity 0.3s ease;">✕</div>
 
-  <a id="il-link" href="#" target="_blank" style="display:block;width:100%;height:100%;cursor:pointer;">
+  <a id="il-link" href="javascript:void(0);" style="display:block;width:100%;height:100%;cursor:default;">
 
   <svg id="il-svg" width="160" height="184" viewBox="-30 0 200 160" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
     <defs>
@@ -228,6 +228,7 @@
     revealed = true;
     wrap.style.transform = 'translateX(0px)';
     bubble.style.right = '165px';
+    bubble.style.display = 'block';
     closeBtn.style.opacity = '1';
     closeBtn.style.pointerEvents = 'auto';
   }
@@ -240,9 +241,42 @@
     closeBtn.style.pointerEvents = 'none';
   }
 
+  /* On phones/tablets, start tucked away (just the small bubble tab)
+
+
+     so the mascot doesn't sit in the way while browsing products.
+
+
+     Tapping the bubble still brings the full mascot out. */
+
+
+  if (window.innerWidth <= 900) {
+    hide();
+  } else {
+    /* On desktop: show for a few seconds, then tuck mostly out of the
+       way (peeking in from the edge, still clickable) and let the
+       text bubble disappear entirely so nothing lingers over content. */
+    setTimeout(function() {
+      if (revealed) {
+        hide();
+        bubble.style.display = 'none';
+      }
+    }, 6000);
+  }
+
+
+  
+
+
   /* Clicking the bubble reveals the mascot */
+
+
   bubble.addEventListener('click', function() {
+
+
     if (!revealed) reveal();
+
+
   });
 
   /* Clicking the mascot link: only navigates to the PDF if already revealed */
@@ -270,6 +304,7 @@
 
 <script>
     const API_URL   = 'https://script.google.com/macros/s/AKfycbzVs0pljy0IM55Tm65BXky729JlOhA_hvPa_clDrKKatnZ0uvaK7LZ-E2DwRm8_FfEa/exec';
+    const SHEET_ID  = '1uwkWW5ItWHrLfhuP1BTbUOHouUQbyhtMemuexl3Y5H0';
     const SHEET     = 'Power';
     const CACHE_KEY = `il-products-${SHEET}`;
 
@@ -299,105 +334,124 @@
       return tile;
     }
 
-    async function loadProducts() {
+    function renderRows(valid) {
+      const content = document.getElementById('content');
+      if (!valid || valid.length === 0) {
+        content.innerHTML = `<div class="state-message"><div class="icon">📭</div>No products found.</div>`;
+        return;
+      }
+      const sections = {};
+      const sectionOrder = [];
+      valid.forEach(r => {
+        const sec = r.section && r.section.trim() ? r.section.trim() : 'Other';
+        if (!sections[sec]) { sections[sec] = []; sectionOrder.push(sec); }
+        sections[sec].push(r);
+      });
+      content.innerHTML = '';
+      sectionOrder.forEach(secName => {
+        const wrap = document.createElement('div');
+        wrap.className = 'product-section';
+        const header = document.createElement('div');
+        header.className = 'section-header';
+        header.innerHTML = `<span class="section-title">${secName}</span><div class="section-line"></div>`;
+        const grid = document.createElement('div');
+        grid.className = 'product-grid';
+        sections[secName].forEach(({ name, img, spec, sku }) => grid.appendChild(buildTile(name, img, spec, sku)));
+        const row = document.createElement('div');
+        row.className = 'product-row';
+        const leftArrow = document.createElement('div');
+        leftArrow.className = 'scroll-arrow';
+        leftArrow.textContent = '‹';
+        leftArrow.onclick = () => grid.scrollBy({ left: -280, behavior: 'smooth' });
+        const rightArrow = document.createElement('div');
+        rightArrow.className = 'scroll-arrow';
+        rightArrow.textContent = '›';
+        rightArrow.onclick = () => grid.scrollBy({ left: 280, behavior: 'smooth' });
+        row.appendChild(leftArrow);
+        row.appendChild(grid);
+        row.appendChild(rightArrow);
+        wrap.appendChild(header);
+        wrap.appendChild(row);
+        content.appendChild(wrap);
+      });
+    }
+
+    async function fetchGviz() {
+      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(SHEET)}&tqx=out:json`;
+      const res  = await fetch(url);
+      const text = await res.text();
+      const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
+      return json.table.rows.map(row => ({
+        name:    row.c[0]?.v || '',
+        img:     row.c[1]?.v || '',
+        spec:    row.c[2]?.v || '',
+        sku:     row.c[3]?.v || '',
+        section: row.c[4]?.v || ''
+      })).filter(r => r.name && r.name.trim() && r.name.trim().toLowerCase() !== 'product name');
+    }
+
+    async function fetchAppsScript() {
+      const res  = await fetch(`${API_URL}?sheet=${encodeURIComponent(SHEET)}`);
+      const rows = await res.json();
+      return rows.filter(r => r.name && r.name.trim());
+    }
+
+    function sameData(a, b) {
+      if (!a || !b || a.length !== b.length) return false;
+      return JSON.stringify(a) === JSON.stringify(b);
+    }
+
+    let currentData = null;
+
+    async function loadFast() {
+      try {
+        const rows = await fetchGviz();
+        if (!currentData || !sameData(currentData, rows)) {
+          currentData = rows;
+          renderRows(rows);
+          sessionStorage.setItem(CACHE_KEY, JSON.stringify(rows));
+        }
+      } catch(e) {
+        console.error('gviz fetch failed', e);
+      }
+    }
+
+    async function loadAuthoritative(isBackground) {
       const content = document.getElementById('content');
       try {
-        const res   = await fetch(`${API_URL}?sheet=${encodeURIComponent(SHEET)}`);
-        const rows  = await res.json();
-        const valid = rows.filter(r => r.name && r.name.trim());
-        sessionStorage.setItem(CACHE_KEY, JSON.stringify(valid));
-        if (valid.length === 0) {
-          content.innerHTML = `<div class="state-message"><div class="icon">📭</div>No products found. Add rows to the <strong>Power</strong> tab in Google Sheets.</div>`;
-          return;
+        const rows = await fetchAppsScript();
+        if (!sameData(currentData, rows)) {
+          currentData = rows;
+          renderRows(rows);
+          sessionStorage.setItem(CACHE_KEY, JSON.stringify(rows));
         }
-        const sections = {};
-        const sectionOrder = [];
-        valid.forEach(r => {
-          const sec = r.section && r.section.trim() ? r.section.trim() : 'Other';
-          if (!sections[sec]) { sections[sec] = []; sectionOrder.push(sec); }
-          sections[sec].push(r);
-        });
-        content.innerHTML = '';
-        sectionOrder.forEach(secName => {
-          const wrap = document.createElement('div');
-          wrap.className = 'product-section';
-          const header = document.createElement('div');
-          header.className = 'section-header';
-          header.innerHTML = `<span class="section-title">${secName}</span><div class="section-line"></div>`;
-          const grid = document.createElement('div');
-          grid.className = 'product-grid';
-          sections[secName].forEach(({ name, img, spec, sku }) => {
-            grid.appendChild(buildTile(name, img, spec, sku));
-          });
-          const row = document.createElement('div');
-          row.className = 'product-row';
-          const leftArrow = document.createElement('div');
-          leftArrow.className = 'scroll-arrow';
-          leftArrow.textContent = '‹';
-          leftArrow.onclick = () => grid.scrollBy({ left: -280, behavior: 'smooth' });
-          const rightArrow = document.createElement('div');
-          rightArrow.className = 'scroll-arrow';
-          rightArrow.textContent = '›';
-          rightArrow.onclick = () => grid.scrollBy({ left: 280, behavior: 'smooth' });
-          row.appendChild(leftArrow);
-          row.appendChild(grid);
-          row.appendChild(rightArrow);
-          wrap.appendChild(header);
-          wrap.appendChild(row);
-          content.appendChild(wrap);
-        });
       } catch(e) {
         console.error(e);
-        if (!content.querySelector('.tile')) {
+        if (!isBackground && !content.querySelector('.tile')) {
           content.innerHTML = `<div class="state-message"><div class="icon">⚠️</div>Couldn't load data.</div>`;
         }
       }
     }
 
+    /* 1. Instant paint from last session's cache, if any */
     const cached = sessionStorage.getItem(CACHE_KEY);
     if (cached) {
       try {
-        const valid = JSON.parse(cached);
-        const content = document.getElementById('content');
-        const sections = {};
-        const sectionOrder = [];
-        valid.forEach(r => {
-          const sec = r.section && r.section.trim() ? r.section.trim() : 'Other';
-          if (!sections[sec]) { sections[sec] = []; sectionOrder.push(sec); }
-          sections[sec].push(r);
-        });
-        content.innerHTML = '';
-        sectionOrder.forEach(secName => {
-          const wrap = document.createElement('div');
-          wrap.className = 'product-section';
-          const header = document.createElement('div');
-          header.className = 'section-header';
-          header.innerHTML = `<span class="section-title">${secName}</span><div class="section-line"></div>`;
-          const grid = document.createElement('div');
-          grid.className = 'product-grid';
-          sections[secName].forEach(({ name, img, spec, sku }) => grid.appendChild(buildTile(name, img, spec, sku)));
-          const row = document.createElement('div');
-          row.className = 'product-row';
-          const leftArrow = document.createElement('div');
-          leftArrow.className = 'scroll-arrow';
-          leftArrow.textContent = '‹';
-          leftArrow.onclick = () => grid.scrollBy({ left: -280, behavior: 'smooth' });
-          const rightArrow = document.createElement('div');
-          rightArrow.className = 'scroll-arrow';
-          rightArrow.textContent = '›';
-          rightArrow.onclick = () => grid.scrollBy({ left: 280, behavior: 'smooth' });
-          row.appendChild(leftArrow);
-          row.appendChild(grid);
-          row.appendChild(rightArrow);
-          wrap.appendChild(header);
-          wrap.appendChild(row);
-          content.appendChild(wrap);
-        });
-      } catch(e) { /* ignore bad cache, fresh load below will fix it */ }
+        currentData = JSON.parse(cached);
+        renderRows(currentData);
+      } catch(e) { /* ignore bad cache, fresh loads below will fix it */ }
     }
 
-    loadProducts();
-    setInterval(loadProducts, 30000);
+    /* 2. Fast paint from the quick public feed (~0.3s) */
+    loadFast();
+
+    /* 3. Authoritative check against the live sheet (~2s) — silently
+       corrects anything the fast feed hadn't caught up on yet, such
+       as a just-added product */
+    loadAuthoritative(false);
+
+    /* 4. Keep reconciling with the authoritative source periodically */
+    setInterval(() => loadAuthoritative(true), 30000);
 </script>
 <script src="mobile-nav.js"></script>
 </body>
