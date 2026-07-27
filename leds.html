@@ -172,6 +172,10 @@
   var revealed = true;
   var frame = 0;
 
+
+  var DISMISS_KEY = 'il-mascot-dismissed';
+  function markDismissed() { try { sessionStorage.setItem(DISMISS_KEY, 'true'); } catch(e) {} }
+  function alreadyDismissed() { try { return sessionStorage.getItem(DISMISS_KEY) === 'true'; } catch(e) { return false; } }
   function tick() {
     frame += 1;
     var t = frame * 0.07;
@@ -212,6 +216,15 @@
      Tapping the bubble still brings the full mascot out. */
   if (window.innerWidth <= 900) {
     hide();
+  } else if (alreadyDismissed()) {
+    /* Already dismissed on a previous page this session -- start
+       straight in the closed/peeking state, don't show the message again. */
+    revealed = false;
+    wrap.style.transform = 'translateX(130px)';
+    bubble.style.right = '70px';
+    bubble.style.display = 'none';
+    closeBtn.style.opacity = '0';
+    closeBtn.style.pointerEvents = 'none';
   } else {
     /* On desktop: show for a few seconds, then tuck mostly out of the
        way (peeking in from the edge, still clickable) and let the
@@ -220,6 +233,7 @@
       if (revealed) {
         hide();
         bubble.style.display = 'none';
+        markDismissed();
       }
     }, 6000);
   }
@@ -242,6 +256,7 @@
     e.preventDefault();
     e.stopPropagation();
     hide();
+    if (window.innerWidth > 900) { bubble.style.display = 'none'; markDismissed(); }
     /* On mobile, X also collapses the bubble down to a tiny dot
        instead of leaving the full "click me for help" text showing. */
     if (window.innerWidth <= 900) { bubble.classList.add('collapsed'); }
@@ -273,7 +288,7 @@
       <a href="connectors.html">Connectors</a>
       <a href="channel-lens.html">Channel &amp; Lens Cover</a>
       <a href="control.html">Control</a>
-      <a href="https://www.inspiredled.com/distributor-application/">Forms</a>
+      <a href="forms.html">Forms</a>
       <div class="nav-mobile-contact">
         <a href="tel:4809414286">(480) 941-4286</a>
         <a href="mailto:orders@inspiredled.com">orders@inspiredled.com</a>
