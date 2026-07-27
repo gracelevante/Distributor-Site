@@ -266,14 +266,15 @@
     closeBtn.style.opacity = '0';
     closeBtn.style.pointerEvents = 'none';
   } else {
-    /* On desktop: show for a few seconds, then tuck mostly out of the
-       way (peeking in from the edge, still clickable) and let the
-       text bubble disappear entirely so nothing lingers over content. */
+    /* Mark as dismissed right away -- so even if the user clicks to
+       another page before the timer below finishes, the next page
+       correctly starts in the tucked-away state instead of showing
+       the full message again. */
+    markDismissed();
     setTimeout(function() {
       if (revealed) {
         hide();
         bubble.style.display = 'none';
-        markDismissed();
       }
     }, 6000);
   }
